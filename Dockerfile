@@ -5,3 +5,4 @@ RUN apt-get update && apt-get install -y curl autoconf automake libtool pkg-conf
 #Add in libpostal
 RUN cd /var && git clone https://github.com/openvenues/libpostal && cd libpostal && mkdir data-dir && ./bootstrap.sh && ./configure --datadir=/var/data-dir &&  make -j4 && make install && ldconfig
 
+RUN cd /var && git clone https://github.com/derekparker/delve && cd delve && make install
