@@ -1,10 +1,28 @@
-FROM golang:latest
-
-RUN apt-get update && apt-get install -y curl autoconf automake libtool pkg-config git gcc build-essential
+FROM golang:alpine
 
 #Add in libpostal
-RUN cd /var && git clone https://github.com/openvenues/libpostal && cd libpostal && mkdir data-dir && ./bootstrap.sh && ./configure --datadir=/var/data-dir &&  make -j4 && make install && ldconfig
+ENV LIBPOSTAL_DATA=/data
 
-RUN cd /var && git clone https://github.com/derekparker/delve && cd delve && make install
+#Add in libpostal
+RUN apk add --no-cache snappy curl bash findutils tar coreutils \
+ && apk add --no-cache --virtual .build-deps snappy-dev git autoconf automake make gcc libtool libc-dev \
+ && mkdir -p /tmp/src \
+ && cd /tmp/src \
+ && git clone https://github.com/openvenues/libpostal.git \
+ && cd libpostal \
+ && echo "ACLOCAL_AMFLAGS = -I m4" >> Makefile.am \
+ && echo "AC_CONFIG_MACRO_DIR([m4])" >> configure.ac \
+ && mkdir -p m4 \
+ && sed -i -e 's/\(\s*.*\/libpostal_data\s*download\s*all\s*\$(datadir)\/libpostal\)/#\1/g' src/Makefile.am \
+ && ./bootstrap.sh \
+ && ./configure --prefix=/usr --datadir=/data \
+ && make -j \
+ && make install \
+ && cd / \
+ && /usr/bin/libpostal_data download all $LIBPOSTAL_DATA/libpostal \
+ && apk del .build-deps \
+ && rm -fr .build-deps /tmp/src /root/.ash_history
 
-RUN wget https://github.com/golang/dep/releases/download/v0.3.2/dep-linux-amd64 && mv dep-linux-amd64 /usr/local/bin/dep && chmod a+x /usr/local/bin/dep
+COPY ./docker-entrypoint.sh /
+RUN chmod a+x /docker-entrypoint.sh
+ENTRYPOINT ["/docker-entrypoint.sh"]
