@@ -23,7 +23,7 @@ RUN apk add --no-cache snappy curl bash findutils tar coreutils \
  && apk del .build-deps \
  && rm -fr .build-deps /tmp/src /root/.ash_history
 
-RUN apk add --no-cache git
+RUN apk add --no-cache git gcc pkgconfig snappy-dev autoconf automake make libtool libc-dev
 
 COPY ./docker-entrypoint.sh /
 RUN chmod a+x /docker-entrypoint.sh
