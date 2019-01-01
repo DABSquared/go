@@ -13,7 +13,6 @@ build_jobs: &build_jobs
 
 workflows:
   version: 2
-  commit:
     <<: *build_jobs
 
 shared: &shared
@@ -24,6 +23,10 @@ shared: &shared
 
     - setup_remote_docker:
         docker_layer_caching: true
+
+    - run:
+        name: Install build dependencies.
+        command: apk add --no-cache bash curl git jq make perl
 
     - run:
         name: Add dynamic shared vars to env.
