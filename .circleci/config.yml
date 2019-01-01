@@ -13,6 +13,7 @@ build_jobs: &build_jobs
 
 workflows:
   version: 2
+  build:
     <<: *build_jobs
 
 shared: &shared
