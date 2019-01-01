@@ -1,4 +1,11 @@
-FROM golang:alpine
+ARG target
+FROM $target/golang:alpine
+
+ARG arch
+ENV ARCH=$arch
+
+COPY qemu-$ARCH-static* /usr/bin/
+
 
 #Add in libpostal
 ENV LIBPOSTAL_DATA=/data
