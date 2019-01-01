@@ -69,7 +69,7 @@ jobs:
   build-amd64:
     <<: *shared
     environment:
-      GITHUB_REPO: minio/minio
+      GITHUB_REPO: dabsquared/go
       IMAGE: go
       REGISTRY: dabsquared
       TAG: amd64
@@ -78,7 +78,7 @@ jobs:
   build-arm64:
     <<: *shared
     environment:
-      GITHUB_REPO: minio/minio
+      GITHUB_REPO: dabsquared/go
       IMAGE: go
       REGISTRY: dabsquared
       QEMU_ARCH: aarch64
@@ -88,7 +88,7 @@ jobs:
   build-armhf:
     <<: *shared
     environment:
-      GITHUB_REPO: minio/minio
+      GITHUB_REPO: dabsquared/go
       IMAGE: go
       REGISTRY: dabsquared
       QEMU_ARCH: arm
