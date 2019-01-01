@@ -22,7 +22,7 @@ RUN apk add --no-cache snappy curl bash findutils tar coreutils \
  && mkdir -p m4 \
  && sed -i -e 's/\(\s*.*\/libpostal_data\s*download\s*all\s*\$(datadir)\/libpostal\)/#\1/g' src/Makefile.am \
  && ./bootstrap.sh \
- && if [ $arg == "amd64" ] ; then ./configure --prefix=/usr --datadir=/data ; else ./configure --prefix=/usr --datadir=/data --disable-sse2 ; fi   \
+ && if [ $arch = "amd64" ]; then ./configure --prefix=/usr --datadir=/data; else ./configure --prefix=/usr --datadir=/data --disable-sse2; fi   \
  && make -j \
  && make install \
  && cd / \
