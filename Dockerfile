@@ -13,9 +13,6 @@ ENV LIBPOSTAL_DATA=/data
 #Add in libpostal
 RUN apk add --no-cache snappy curl bash findutils tar coreutils \
  && apk add --no-cache --virtual .build-deps snappy-dev git autoconf automake make gcc libtool libc-dev \
- && dd if=/dev/zero of=/swap bs=1M count=2048 \
- && mkswap /swap \
- && swapon /swap \
  && mkdir -p /tmp/src \
  && cd /tmp/src \
  && git clone https://github.com/openvenues/libpostal.git \
