@@ -1,5 +1,5 @@
 ARG target
-FROM $target/golang:alpine
+FROM $target/golang:stretch
 
 ARG arch
 ENV ARCH=$arch
@@ -11,28 +11,21 @@ COPY qemu-$ARCH-static* /usr/bin/
 ENV LIBPOSTAL_DATA=/data
 
 #Add in libpostal
-RUN apk add --no-cache snappy curl bash findutils tar coreutils \
- && apk add --no-cache --virtual .build-deps snappy-dev git autoconf automake make gcc libtool libc-dev \
+RUN apt-get update \
+ && apt-get install -y curl autoconf automake libtool pkg-config \
  && mkdir -p /tmp/src \
  && cd /tmp/src \
  && git clone https://github.com/openvenues/libpostal.git \
  && cd libpostal \
- && echo "ACLOCAL_AMFLAGS = -I m4" >> Makefile.am \
- && echo "AC_CONFIG_MACRO_DIR([m4])" >> configure.ac \
- && mkdir -p m4 \
- && sed -i -e 's/\(\s*.*\/libpostal_data\s*download\s*all\s*\$(datadir)\/libpostal\)/#\1/g' src/Makefile.am \
  && ./bootstrap.sh \
- && if [ $arch = "amd64" ]; then ./configure --prefix=/usr --datadir=/data; else ./configure --prefix=/usr --datadir=/data --enable-sse2=no --with-cflags-scanner-extra="-Wc,-mmarch64"; fi   \
+ && echo "dan-configure" \
+ && if [ $arch = "amd64" ]; then ./configure --prefix=/usr --datadir=/data; else ./configure --prefix=/usr --datadir=/data --enable-sse2=no; fi   \
+ && echo "dan-make" \
  && make -j \
+  && echo "dan-make-install" \
  && make install \
  && cd / \
- && /usr/bin/libpostal_data download all $LIBPOSTAL_DATA/libpostal \
- && apk del .build-deps \
- && rm -fr .build-deps /tmp/src /root/.ash_history \
- && swapoff /swap \
- && rm -rf /swap
-
-RUN apk add --no-cache git gcc pkgconfig snappy-dev autoconf automake make libtool libc-dev
+ && /usr/bin/libpostal_data download all $LIBPOSTAL_DATA/libpostal
 
 COPY ./docker-entrypoint.sh /
 RUN chmod a+x /docker-entrypoint.sh
